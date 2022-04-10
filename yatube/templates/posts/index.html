@@ -5,23 +5,19 @@
 {% endblock %}
 
 {% block content %}
-<!-- класс py-5 создает отступы сверху и снизу блока -->
-<div class="container py-5">
-  <h1>
-    {{ title }}
-  </h1>
-    {% for post in posts %}
-      <article>
+  {% comment %} класс py-5 создает отступы сверху и снизу блока {% endcomment %}
+  <div class="container py-5">
+    <h1>
+      {{ title }}
+    </h1>
+      {% for post in posts %}
         {% include 'includes/post_view.html' %}
         {% if post.group %}   
           <a href="{% url 'posts:group_list' post.group.slug %}">
             все записи группы</a>
         {% endif %} 
-        {% comment %}
-          под последним постом нет линии
-        {% endcomment %}
+        {% comment %} под последним постом нет линии {% endcomment %}
         {% if not forloop.last %}<hr>{% endif %}
-      </article>
-    {% endfor %}
-</div>  
+      {% endfor %}
+  </div>  
 {% endblock %}
