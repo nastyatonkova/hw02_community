@@ -1,5 +1,7 @@
 import os
 
+from django.core.paginator import Paginator
+
 from django.shortcuts import get_object_or_404, render
 
 from .models import Group, Post
@@ -12,11 +14,18 @@ POST_LENGTH = 10
 def index(request) -> None:
     """Return main page."""
     template = PATH_TO_INDEX
-    title = 'Main page for project Yatube'
-    posts = Post.objects.all()[:POST_LENGTH]
+    # title = 'Main page for project Yatube'
+    post_list = Post.objects.all().order_by('-pub_date')
+    paginator = Paginator(post_list, 10)
+
+    # Из URL извлекаем номер запрошенной страницы - это значение параметра page
+    page_number = request.GET.get('page')
+
+    # Получаем набор записей для страницы с запрошенным номером
+    page_obj = paginator.get_page(page_number)
+    # Отдаем в словаре контекста
     context = {
-        'title_dict': title,
-        'posts': posts
+        'page_obj': page_obj,
     }
     return render(request, template, context)
 
