@@ -4,6 +4,8 @@ from django.core.paginator import Paginator
 
 from django.shortcuts import get_object_or_404, render
 
+from django.contrib.auth.decorators import login_required
+
 from .models import Group, Post
 
 from django.contrib.auth.models import User
@@ -35,6 +37,7 @@ def index(request):
     return render(request, template, context)
 
 
+@login_required
 def group_posts(request, slug):
     """View-function for group page."""
     template = PATH_TO_GROUP_LIST
@@ -68,10 +71,10 @@ def profile(request, username):
     return render(request, template, context)
 
 
-def post_detail(request, username, post_id):
+def post_detail(request, post_id):
     """Code to the model and the creation of the context dict for posts."""
     template = PATH_TO_POST
-    post = get_object_or_404(Post, author__username=username, pk=post_id)
+    post = get_object_or_404(Post, pk=post_id)
     author = post.author
     posts_count = author.posts.count()
     context = {
