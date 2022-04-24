@@ -82,3 +82,11 @@ def post_detail(request, post_id):
         'posts_count': posts_count,
     }
     return render(request, template, context)
+
+
+def post_create(request):
+    pass
+
+
+def post_edit(request):
+    pass
