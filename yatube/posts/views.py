@@ -98,45 +98,28 @@ def post_create(request):
         post.save()
         return redirect('posts:profile', username=request.user.username)
     context = {
-        "form": form,
+        'form': form,
         'is_edit': False,
     }
     return render(request, template, context)
 
 
 @login_required
-def post_edit(request, username, post_id):
-    template = PATH_TO_CREATE_POST
-    post = get_object_or_404(Post, author__username=username, id=post_id)
-    if post.author != request.user:
-        return redirect('post', username=username,
-                        post_id=post_id)
-
-    form = PostForm(request.POST or None, instance=post)
-    if form.is_valid():
-        post.save()
-        return redirect('post', username=post.author.username,
-                        post_id=post_id)
-    context = {
-        "form": form,
-        'is_edit': True,
-    }
-    return render(request, template, context)
-
-
-"""""
 def post_edit(request, post_id):
-
     groups = Group.objects.all()
     template = PATH_TO_CREATE_POST
     required_post = Post.objects.get(pk=post_id)
+    is_edit = 1
     if required_post.author == request.user:
-        is_edit = 1
-        form = PostForm(instance=required_post)
+        form = PostForm(request.POST or None, instance=required_post)
         if form.is_valid():
             form.save()
-            return redirect('posts:profile',username=request.user.username)
-        context = {'form': form, 'groups': groups, 'is_edit': is_edit, }
+            return redirect('posts:profile', username=request.user.username)
+        context = {
+            'form': form,
+            'groups': groups,
+            'is_edit': is_edit,
+        }
         return render(request, template, context)
     else:
-        return redirect('posts:post_detail', post_id=post_id) ."""
+        return redirect('posts:post_detail', post_id=post_id)

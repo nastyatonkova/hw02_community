@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 {% block title %}
-  {% if is_edit %}Редактировать запись{% else %}Новая запись{% endif %}
-{% endblock %}
+  {% if is_edit %}Редактировать запись{% else %}Новая запись{% endif %} запись{% endblock title %}
 {% block content %}
   {% load user_filters %}
   <div class="row justify-content-center">
@@ -52,4 +51,4 @@
       </div>
     </div>
   </div>
-{% endblock %}
+{% endblock content%}
