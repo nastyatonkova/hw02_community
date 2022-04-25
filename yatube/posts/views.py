@@ -109,7 +109,7 @@ def post_edit(request, post_id):
     groups = Group.objects.all()
     template = PATH_TO_CREATE_POST
     required_post = Post.objects.get(pk=post_id)
-    is_edit = 1
+    is_edit: bool = True
     if required_post.author == request.user:
         form = PostForm(request.POST or None, instance=required_post)
         if form.is_valid():
