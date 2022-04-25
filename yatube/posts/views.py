@@ -2,18 +2,22 @@ import os
 
 from django.core.paginator import Paginator
 
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, render, redirect
 
 from django.contrib.auth.decorators import login_required
 
-from .models import Group, Post
+from .models import Group, Post, User
 
-from django.contrib.auth.models import User
+# from django.contrib.auth.models import User
+
+from .forms import PostForm
+
 
 PATH_TO_INDEX = os.path.join('posts', 'index.html')
 PATH_TO_GROUP_LIST = os.path.join('posts', 'group_list.html')
 PATH_TO_PROFILE = os.path.join('posts', 'profile.html')
 PATH_TO_POST = os.path.join('posts', 'post_detail.html')
+PATH_TO_CREATE_POST = os.path.join('posts', 'create_post.html')
 # POST_LENGTH = 10
 POSTS_IN_PAGINATOR = 10
 
@@ -84,9 +88,55 @@ def post_detail(request, post_id):
     return render(request, template, context)
 
 
+@login_required
 def post_create(request):
-    pass
+    template = PATH_TO_CREATE_POST
+    form = PostForm(request.POST or None)
+    if form.is_valid():
+        post = form.save(commit=False)
+        post.author = request.user
+        post.save()
+        return redirect('posts:profile', username=request.user.username)
+    context = {
+        "form": form,
+        'is_edit': False,
+    }
+    return render(request, template, context)
 
 
-def post_edit(request):
-    pass
+@login_required
+def post_edit(request, username, post_id):
+    template = PATH_TO_CREATE_POST
+    post = get_object_or_404(Post, author__username=username, id=post_id)
+    if post.author != request.user:
+        return redirect('post', username=username,
+                        post_id=post_id)
+
+    form = PostForm(request.POST or None, instance=post)
+    if form.is_valid():
+        post.save()
+        return redirect('post', username=post.author.username,
+                        post_id=post_id)
+    context = {
+        "form": form,
+        'is_edit': True,
+    }
+    return render(request, template, context)
+
+
+"""""
+def post_edit(request, post_id):
+
+    groups = Group.objects.all()
+    template = PATH_TO_CREATE_POST
+    required_post = Post.objects.get(pk=post_id)
+    if required_post.author == request.user:
+        is_edit = 1
+        form = PostForm(instance=required_post)
+        if form.is_valid():
+            form.save()
+            return redirect('posts:profile',username=request.user.username)
+        context = {'form': form, 'groups': groups, 'is_edit': is_edit, }
+        return render(request, template, context)
+    else:
+        return redirect('posts:post_detail', post_id=post_id) ."""
